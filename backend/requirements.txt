@@ -1,0 +1,11 @@
+Flask
+Flask-Cors
+Flask-SQLAlchemy
+PyPDF2
+passlib
+python-jose
+PyJWT
+joblib
+scikit-learn
+python-docx
+odfpy

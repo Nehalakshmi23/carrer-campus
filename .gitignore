@@ -1,0 +1,67 @@
+# -------------------------
+# Python & Flask backend
+# -------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+instance/
+.env
+.env.*
+*.env
+.venv/
+venv/
+ENV/
+env/
+
+# Flask cache and build artifacts
+*.log
+*.pid
+*.sqlite
+.cache/
+*.pyc
+dist/
+build/
+
+# If using uploads folder
+uploads/
+media/
+
+# -------------------------
+# Node / React frontend (if present)
+# -------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-store/
+
+# React build output
+build/
+dist/
+
+# Environment files
+*.env.local
+*.env.development
+*.env.production
+*.env.test
+
+# -------------------------
+# IDE & System files
+# -------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+.DS_Store
+Thumbs.db
+
+# -------------------------
+# OS general files
+# -------------------------
+*.tmp
+*.temp
+*.orig
