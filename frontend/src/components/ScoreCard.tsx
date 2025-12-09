@@ -1,52 +1,57 @@
-import React from 'react';
-import { CheckCircle, AlertCircle } from 'lucide-react';
+import React from "react";
 
 interface ScoreCardProps {
-  score: number;
-  message: string;
+  data: {
+    final_score: number;
+    score_breakdown: {
+      skill_match_percent: number;
+      keyword_coverage_percent: number;
+      semantic_similarity: number;
+      model_probability_score: number;
+    };
+    matched_skills: string[];
+    missing_skills: string[];
+    years_experience_estimate: number;
+    recommendations: string[];
+  };
 }
 
-const ScoreCard: React.FC<ScoreCardProps> = ({ score, message }) => {
-  const getScoreColor = (score: number) => {
-    if (score >= 8) return 'text-green-600';
-    if (score >= 6) return 'text-yellow-600';
-    return 'text-red-600';
-  };
+const ScoreCard: React.FC<ScoreCardProps> = ({ data }) => {
 
-  const getScoreBg = (score: number) => {
-    if (score >= 8) return 'bg-green-50 border-green-200';
-    if (score >= 6) return 'bg-yellow-50 border-yellow-200';
-    return 'bg-red-50 border-red-200';
-  };
+  if (!data || data.final_score === undefined) {
+    return <div>No score available.</div>;
+  }
 
   return (
-    <div className={`p-6 rounded-lg border-2 ${getScoreBg(score)} transition-all duration-300`}>
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">Match Analysis</h3>
-        {score >= 7 ? (
-          <CheckCircle className="h-6 w-6 text-green-600" />
-        ) : (
-          <AlertCircle className="h-6 w-6 text-yellow-600" />
-        )}
-      </div>
-      
-      <div className="text-center mb-4">
-        <div className={`text-4xl font-bold ${getScoreColor(score)} mb-2`}>
-          {score.toFixed(1)}
-        </div>
-        <div className="text-sm text-gray-600">out of 10</div>
+    <div className="score-card">
+      <h2>ATS Match Report</h2>
+
+      <h3>Final Score: {data.final_score.toFixed(2)} / 10</h3>
+
+      <div className="score-section">
+        <p><strong>Skill Match:</strong> {data.score_breakdown.skill_match_percent}%</p>
+        <p><strong>Keyword Coverage:</strong> {data.score_breakdown.keyword_coverage_percent}%</p>
+        <p><strong>Semantic Similarity:</strong> {data.score_breakdown.semantic_similarity}/10</p>
+        <p><strong>Model Probability:</strong> {data.score_breakdown.model_probability_score}/10</p>
       </div>
 
-      <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
-        <div
-          className={`h-3 rounded-full transition-all duration-500 ${
-            score >= 8 ? 'bg-green-500' : score >= 6 ? 'bg-yellow-500' : 'bg-red-500'
-          }`}
-          style={{ width: `${(score / 10) * 100}%` }}
-        ></div>
+      <div className="skills-section">
+        <h4>Matched Skills:</h4>
+        <p>{data.matched_skills.join(", ") || "None"}</p>
+
+        <h4>Missing Skills:</h4>
+        <p>{data.missing_skills.join(", ") || "None"}</p>
       </div>
 
-      <p className="text-gray-700 text-sm leading-relaxed">{message}</p>
+      <h4>Experience Estimate:</h4>
+      <p>{data.years_experience_estimate} years</p>
+
+      <h4>Recommendations:</h4>
+      <ul>
+        {data.recommendations.map((r, i) => (
+          <li key={i}>{r}</li>
+        ))}
+      </ul>
     </div>
   );
 };
