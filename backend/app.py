@@ -263,6 +263,108 @@ def model_status():
     exists = (model is not None) and (vectorizer is not None)
     return jsonify({"trained": exists})
 
+@app.route("/chat", methods=["POST"])
+def chat():
+    data = request.json or {}
+    analysis = data.get("analysis")
+    question = (data.get("question") or "").lower()
+
+    if not analysis:
+        return jsonify({"answer": "No analysis context available."}), 400
+
+    # ---- Extract analysis safely ----
+    skill_match = float(analysis.get("skill_match", 0))
+    keyword_cov = float(analysis.get("keyword_coverage", 0))
+    matched = analysis.get("matched_skills", [])
+    missing = analysis.get("missing_skills", [])
+    experience = float(analysis.get("experience_estimate", 0))
+
+    # ---- Helper formatting ----
+    matched_str = ", ".join(matched) if matched else "none"
+    missing_str = ", ".join(missing[:6]) if missing else "none"
+
+    # ========= RULE ENGINE =========
+
+    # 🔹 Resume / Improvement questions
+    if any(k in question for k in ["improve", "better", "enhance"]):
+
+        if skill_match < 40:
+            answer = (
+                f"Your skill match is only {skill_match}%, which indicates a major gap.\n\n"
+                f"Missing core skills: {missing_str}.\n\n"
+                "Action plan:\n"
+                "1. Start learning these skills with small hands-on projects.\n"
+                "2. Add them to your resume ONLY after practical usage.\n"
+                "3. Re-run the analysis after updating your resume."
+            )
+
+        elif keyword_cov < 50:
+            answer = (
+                f"Your skill match is decent ({skill_match}%), but ATS keyword coverage is low "
+                f"({keyword_cov}%).\n\n"
+                "This means your resume may not pass automated screening.\n\n"
+                "What to fix:\n"
+                "• Rewrite project descriptions using exact job keywords\n"
+                "• Avoid synonyms (ATS prefers exact matches)\n"
+                "• Ensure tools and skills appear in both Skills and Projects sections"
+            )
+
+        elif experience < 1:
+            answer = (
+                "You have relevant skills, but limited experience detected.\n\n"
+                "How to improve:\n"
+                "• Highlight academic projects clearly\n"
+                "• Add GitHub links if available\n"
+                "• Describe what YOU built, not just technologies used"
+            )
+
+        else:
+            answer = (
+                "Your profile is strong and well-aligned.\n\n"
+                "To further strengthen your resume:\n"
+                "• Quantify achievements (numbers, impact)\n"
+                "• Place key skills at the top\n"
+                "• Tailor resume slightly for each job role"
+            )
+
+    # 🔹 Skill learning questions
+    elif any(k in question for k in ["skills", "learn", "study"]):
+        answer = (
+            f"You already match these skills: {matched_str}.\n\n"
+            f"To improve your job readiness, focus on learning:\n"
+            f"{missing_str}.\n\n"
+            "Start with beginner projects, then update your resume accordingly."
+        )
+
+    # 🔹 Job readiness questions
+    elif any(k in question for k in ["ready", "eligible", "apply"]):
+        if skill_match >= 70:
+            answer = (
+                f"Yes, you are largely ready for this role.\n\n"
+                f"Skill Match: {skill_match}%\n"
+                f"ATS Probability looks good.\n\n"
+                "You can apply confidently, while continuing to refine keywords."
+            )
+        else:
+            answer = (
+                f"You are partially ready (Skill Match: {skill_match}%).\n\n"
+                f"Missing skills: {missing_str}.\n\n"
+                "Improving these areas will significantly increase your chances."
+            )
+
+    # 🔹 Default fallback
+    else:
+        answer = (
+            "You can ask things like:\n"
+            "• How can I improve my resume?\n"
+            "• What skills should I learn for this job?\n"
+            "• Am I ready to apply for this role?\n\n"
+            "I’ll answer based on your resume analysis."
+        )
+
+    return jsonify({"answer": answer}), 200
+
+
 @app.route("/analyze", methods=["POST"])
 @auth_required
 def analyze():

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'react-toastify';
-import { Eye, EyeOff, Compass } from 'lucide-react';
+import { Eye, EyeOff, Compass, Mail, Lock, UserPlus } from 'lucide-react';
 import { signup } from '../utils/api';
 
 const signupSchema = z.object({
@@ -34,9 +34,7 @@ const Signup: React.FC = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('cc_token');
-    if (token) {
-      navigate('/home');
-    }
+    if (token) navigate('/home');
   }, [navigate]);
 
   const onSubmit = async (data: SignupFormData) => {
@@ -54,111 +52,136 @@ const Signup: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <Compass className="h-12 w-12 text-blue-600" />
-        </div>
-        <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
-          Create your Career Compass account
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Already have an account?{' '}
-          <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
-            Sign in here
-          </Link>
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-purple-50">
+
+      {/* LEFT INFO */}
+      <div className="hidden lg:flex flex-col justify-center px-16 bg-gradient-to-br from-purple-700 to-purple-900 text-white">
+        <Compass className="h-14 w-14 mb-6" />
+        <h1 className="text-4xl font-bold mb-4">
+          Join Career Compass
+        </h1>
+        <p className="text-lg text-purple-100 max-w-md">
+          Create your account and analyze your resume against job descriptions
+          using AI-powered ATS insights.
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      {/* RIGHT FORM */}
+      <div className="flex items-center justify-center px-6">
+        <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+
+          <div className="flex items-center gap-2 mb-4">
+            <UserPlus className="h-6 w-6 text-purple-600" />
+            <h2 className="text-2xl font-bold text-gray-900">
+              Create Account
+            </h2>
+          </div>
+
+          <p className="text-gray-600 mb-6">
+            Start improving your ATS score today
+          </p>
+
+          <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+
+            {/* EMAIL */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
-              </label>
-              <div className="mt-1">
+              <label className="text-sm font-medium text-gray-700">Email</label>
+              <div className="relative mt-1">
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <input
                   {...register('email')}
                   type="email"
-                  autoComplete="email"
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter your email"
+                  className="w-full pl-10 pr-3 py-2 border rounded-md
+                  focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                  placeholder="you@example.com"
                 />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-                )}
               </div>
+              {errors.email && (
+                <p className="text-sm text-red-600 mt-1">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
+            {/* PASSWORD */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <div className="mt-1 relative">
+              <label className="text-sm font-medium text-gray-700">Password</label>
+              <div className="relative mt-1">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <input
                   {...register('password')}
                   type={showPassword ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  className="appearance-none block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter your password"
+                  className="w-full pl-10 pr-10 py-2 border rounded-md
+                  focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                  placeholder="••••••••"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute right-3 top-2.5"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400" />
-                  )}
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+                <p className="text-sm text-red-600 mt-1">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
+            {/* CONFIRM PASSWORD */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              <label className="text-sm font-medium text-gray-700">
                 Confirm Password
               </label>
-              <div className="mt-1 relative">
+              <div className="relative mt-1">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <input
                   {...register('confirmPassword')}
                   type={showConfirmPassword ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  className="appearance-none block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Confirm your password"
+                  className="w-full pl-10 pr-10 py-2 border rounded-md
+                  focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                  placeholder="••••••••"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-2.5"
+                  onClick={() =>
+                    setShowConfirmPassword(!showConfirmPassword)
+                  }
                 >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400" />
-                  )}
+                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
+                <p className="text-sm text-red-600 mt-1">
+                  {errors.confirmPassword.message}
+                </p>
               )}
             </div>
 
-            <div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? 'Creating account...' : 'Create account'}
-              </button>
-            </div>
+            {/* BUTTON */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-2.5 bg-purple-700 text-white rounded-md
+              font-medium hover:bg-purple-800 transition disabled:opacity-50"
+            >
+              {isLoading ? 'Creating account...' : 'Create Account'}
+            </button>
           </form>
+
+          <p className="text-sm text-center text-gray-600 mt-6">
+            Already have an account?{' '}
+            <Link
+              to="/login"
+              className="text-purple-700 font-medium hover:underline"
+            >
+              Sign in
+            </Link>
+          </p>
+
         </div>
       </div>
     </div>
